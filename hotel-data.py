@@ -5,7 +5,7 @@ import json
 import re
 
 # Specify the URL you want to fetch
-url = 'https://www.conference-hotel.com/home.php?Kundenid=1267006180&Listid=1&ts=1708492429&Language=US'
+url = 'https://www.conference-hotel.com/home.php?Kundenid=1267006180&Listid=1&ts=1708492429&Language=DE'
 # Use requests to fetch the content of the URL
 response = requests.get(url)
 
@@ -117,16 +117,19 @@ with open('data.json', 'w') as file:
     meeting_rooms_data = {}
     meeting_rooms = soup.find(id='tabs-2')
     meeting_rooms_tbody_buf = meeting_rooms.div.table.find_all('tr', class_="light")
-
     table_col_names = ['name', 'size', 'U-shape', 'Conference', 'Rounds', 'Classroom', 'Theater', 'Reception', 'Circle of chairs']
-
     for i in range(0, len(meeting_rooms_tbody_buf)):
         key_string_demo = 'room_' + str(i+1) + '_'
         meeting_rooms_data[key_string_demo+'name'] = meeting_rooms_tbody_buf[i].td.text.split('\u00a0')[0].strip()
         for j in range(1, len(table_col_names)):
             key_string = key_string_demo + table_col_names[j]
             meeting_rooms_data[key_string] = meeting_rooms_tbody_buf[i].find_all('td', class_='')[j+6].text
-        # print(meeting_rooms_tbody_buf[i].find_all('td', class_=""))
+    meeting_rooms_extra = meeting_rooms.find('div', class_='content_row columns').div
+    meeting_rooms_data['tagungsräume_description'] = meeting_rooms_extra.find_all('div', class_='column_row')[0].p.text
+    Tagungstechnik_string = 'Tagungstechnik_'
+    Tagungstechnik_li_buf = meeting_rooms_extra.find_all('div', class_='column_row')[1].find_all('li')
+    for i in range(len(Tagungstechnik_li_buf)):
+        meeting_rooms_data[Tagungstechnik_string+str(i+1)] = Tagungstechnik_li_buf[i].text
 
     # temp = soup.find(id="tabs-1").div.div.div.h1.text
     # print(temp)
