@@ -3,9 +3,9 @@ import requests
 from bs4 import BeautifulSoup
 
 # Specify the URL you want to fetch
-url = 'https://www.conference-hotel.com/search_details.php?ts=1708492387&Language=US'
+url = 'https://www.tagungshotel.com/search_details.php?ts=1708518895&Language=EN'
 cookies = {
-    'PHPSESSID': '6mtc5spv94c7soa7drv5sbkhvg2ou2kjfvkkaa94r1u2pjci9hj0'
+    'PHPSESSID': 'og2fvdcmi9qn77f0fqoo4qj61h6c8njj7p1onk75crk3b2r36ih1'
 }
 # Use requests to fetch the content of the URL
 response = requests.get(url, cookies=cookies)
@@ -18,7 +18,7 @@ title = soup.title.text
 
 all_p_elements = soup.find_all('p', class_="ContentSearchDetailsHotelTextHotel")
 
-with open('germany.txt', 'w') as file:
+with open('switzerland.txt', 'w') as file:
     for p_element in all_p_elements:
         url = p_element.a.get('href')
         # print(url)
