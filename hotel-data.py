@@ -3,6 +3,7 @@ import requests
 from bs4 import BeautifulSoup
 import json
 import re
+import pandas as pd
 
 # Specify the URL you want to fetch
 url = 'https://www.conference-hotel.com/home.php?Kundenid=1267006180&Listid=1&ts=1708492429&Language=DE'
@@ -15,9 +16,9 @@ soup = BeautifulSoup(response.text, 'html.parser')
 # Extract the title of the page
 title = soup.title.text
 
-with open('data.json', 'w') as file:
-    totaldata = {}
+totaldata = {}
 
+with open('data.json', 'w') as file:
 # ------------------ hotel description
     hotel_description_data = {}
     hotel_description = soup.find(id='tabs-1').div.div
@@ -148,6 +149,40 @@ with open('data.json', 'w') as file:
     totaldata['"Meeting Rooms" section'] = meeting_rooms_data
     totaldata['"Location & Directions" section'] = location_direction_data
     json.dump(totaldata, file, indent=4)
+
+
+# Read the existing Excel file
+existing_df = pd.read_excel('data.xlsx')
+
+# Create lists to store data for each column
+column_a = []
+column_b = []
+column_c = []
+
+# Populate lists with JSON data
+for section, section_data in totaldata.items():
+    column_a.append(section)  # Append section name only once
+    for key, value in section_data.items():
+        column_a.append('')
+        column_b.append(key)
+        column_c.append(value)
+    column_a.pop()
+
+# Create DataFrame
+new_data = pd.DataFrame({
+    'Column A': column_a,
+    'Column B': column_b,
+    'Column C': column_c
+})
+
+# Remove the 'Column A' header
+# new_data = new_data[new_data.index != 0]
+
+# Concatenate existing DataFrame and new DataFrame
+updated_df = pd.concat([existing_df, new_data], ignore_index=True)
+
+# Write the updated DataFrame to the existing Excel file
+updated_df.to_excel('existing_data.xlsx', index=False)
 
 # Print the title
 # print("The title of the page is:", title)
