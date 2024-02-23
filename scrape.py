@@ -1,28 +1,19 @@
-# Import the necessary libraries
-import requests
-from bs4 import BeautifulSoup
+import re
 
-# Specify the URL you want to fetch
-url = 'https://www.tagungshotel.com/search_details.php?ts=1708518895&Language=EN'
-cookies = {
-    'PHPSESSID': 'og2fvdcmi9qn77f0fqoo4qj61h6c8njj7p1onk75crk3b2r36ih1'
-}
-# Use requests to fetch the content of the URL
-response = requests.get(url, cookies=cookies)
+# Open the file in read mode with UTF-8 encoding
+with open('switzerland-urls.txt', 'r', encoding='utf-8') as file:
+    # Read the content of the text file
+    text = file.read()
 
-# Use BeautifulSoup to parse the HTML content
-soup = BeautifulSoup(response.text, 'html.parser')
+# Use regular expression to find numbers within favcart[] array
+numbers = re.findall(r'favcart\[\'(\d+)\']', text)
 
-# Extract the title of the page
-title = soup.title.text
+print(len(numbers))
 
-all_p_elements = soup.find_all('p', class_="ContentSearchDetailsHotelTextHotel")
+# Open a new file to write the numbers
+with open('switzerland-numbers.txt', 'w') as output_file:
+    # Write each number to the output file
+    for number in numbers:
+        output_file.write(number + '\n')
 
-with open('switzerland.txt', 'w') as file:
-    for p_element in all_p_elements:
-        url = p_element.a.get('href')
-        # print(url)
-        file.write(url + '\n')
-
-# Print the title
-print("The title of the page is:", title)
+print("Numbers have been extracted and written to numbers.txt file.")

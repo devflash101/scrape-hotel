@@ -18,6 +18,8 @@ def getDataFromHotel(url):
 
 # ------------------ hotel description
     hotel_description_data = {}
+    if not soup.find(id='tabs-1'):
+        return
     hotel_description = soup.find(id='tabs-1').div.div
 
     hotel_description_data['url'] = url
@@ -93,9 +95,12 @@ def getDataFromHotel(url):
 # ------------------ Key Facts
     key_facts_data = {}
     key_facts = soup.find(id='tabs-1').div.find(class_='column_1 last')
-    key_facts_data['No. of meeting rooms'] = key_facts.find_all(class_='dark')[0].span.text
-    key_facts_data['Capacity largest meeting room'] = key_facts.find_all(class_='light')[0].span.text
-    key_facts_data['Space largest meeting room'] = key_facts.find_all(class_='dark')[1].span.text
+    if len(key_facts.find_all(class_='dark')) > 0:
+        key_facts_data['No. of meeting rooms'] = key_facts.find_all(class_='dark')[0].span.text
+    if len(key_facts.find_all(class_='light')) > 0:
+        key_facts_data['Capacity largest meeting room'] = key_facts.find_all(class_='light')[0].span.text
+    if len(key_facts.find_all(class_='dark')) > 1:
+        key_facts_data['Space largest meeting room'] = key_facts.find_all(class_='dark')[1].span.text
     if len(key_facts.find_all(class_='light')) > 1:
         key_facts_data['No. of hotel rooms'] = key_facts.find_all(class_='light')[1].span.text
     if len(key_facts.find_all(class_='dark')) > 2:
@@ -112,8 +117,9 @@ def getDataFromHotel(url):
         key_facts_data['Underground parking fees'] = key_facts.find_all(class_='light')[4].span.text
 
     key_facts_data['address_street'] = key_facts.find(class_='column_row address').text.split('\n')[2].strip()
-    key_facts_data['address_postcode'] = int(key_facts.find(class_='column_row address').text.split('\n')[3].strip().split()[0])
-    key_facts_data['address_city'] = key_facts.find(class_='column_row address').text.split('\n')[3].strip().split()[1]
+    key_facts_data['address_postcode'] = key_facts.find(class_='column_row address').text.split('\n')[3].strip().split()[0]
+    if len(key_facts.find(class_='column_row address').text.split('\n')[3].strip().split()) > 1:
+        key_facts_data['address_city'] = key_facts.find(class_='column_row address').text.split('\n')[3].strip().split()[1]
     key_facts_data['address_country'] = key_facts.find(class_='column_row address').text.split('\n')[4].strip()
 
     key_facts_language_li_buf = key_facts.find(class_="column_row languages").find_all('li')

@@ -9,13 +9,13 @@ column_b = []
 column_c = []
 
 # Open the text file for reading
-with open('switzerland.txt', 'r') as file:
+with open('germany-numbers-1.txt', 'r', encoding='utf-8') as file:
     # Iterate over each line in the file
     cnt = 0
     for line in file:
         # Print the current line to the console
         # print(line.strip())  # .strip() removes the newline character at the end
-        url = 'https://www.tagungshotel.com/' + line.strip()
+        url = 'https://www.tagungshotel.com/home.php?Kundenid=' + line.strip()
         cnt += 1
         print(cnt)
         print(url)
@@ -23,6 +23,8 @@ with open('switzerland.txt', 'r') as file:
         # time.sleep(1)
         hotel_data = getDataFromHotel(url)
         # Populate lists with JSON data
+        if not hotel_data:
+            continue
         for section, section_data in hotel_data.items():
             column_a.append(section)  # Append section name only once
             for key, value in section_data.items():
@@ -34,6 +36,8 @@ with open('switzerland.txt', 'r') as file:
         column_b.append('')
         column_c.append('')
 
+
+
 # Create DataFrame
 df = pd.DataFrame({
     'Column A': column_a,
@@ -41,5 +45,16 @@ df = pd.DataFrame({
     'Column C': column_c
 })
 
+# Define a function to clean the data
+def clean_data(text):
+    # Replace illegal characters with an empty string
+    cleaned_text = ''.join(char for char in text if ord(char) < 128)
+    return cleaned_text
+
+# Clean the DataFrame
+df['Column A'] = df['Column A'].apply(clean_data)
+df['Column B'] = df['Column B'].apply(clean_data)
+df['Column C'] = df['Column C'].apply(clean_data)
+
 # Write DataFrame to Excel
-df.to_excel('switzerland.xlsx', index=False)
+df.to_excel('germany-1.xlsx', index=False)
