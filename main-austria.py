@@ -51,16 +51,22 @@ df = pd.DataFrame({
     'Column C': column_c
 })
 
-# Define a function to clean the data
-def clean_data(text):
-    # Replace illegal characters with an empty string
-    cleaned_text = ''.join(char for char in text if ord(char) < 128)
-    return cleaned_text
+# Write column_a to a text file
+with open('txt/column_a.txt', 'w', encoding='utf-8') as f_a:
+    for item in column_a:
+        f_a.write(f"{item}\n")
 
-# Clean the DataFrame
-df['Column A'] = df['Column A'].apply(clean_data)
-df['Column B'] = df['Column B'].apply(clean_data)
-df['Column C'] = df['Column C'].apply(clean_data)
+# Write column_b to a text file
+with open('txt/column_b.txt', 'w', encoding='utf-8') as f_b:
+    for item in column_b:
+        f_b.write(f"{item}\n")
+
+# Write column_c to a text file
+with open('txt/column_c.txt', 'w', encoding='utf-8') as f_c:
+    for item in column_c:
+        if isinstance(item, str):
+            item = item.replace('\n', ' ').replace('\r', ' ').replace('\f', ' ').replace('\v', ' ')
+        f_c.write(f"{item}\n")
 
 # Write DataFrame to Excel
 df.to_excel('germany.xlsx', index=False)
